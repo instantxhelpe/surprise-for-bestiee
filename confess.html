@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Special Surprise</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --soft-1: #fff6f8; /* page1 */
+    --soft-2: #f6f0ff; /* page2 */
+    --soft-3: #f0fff9; /* page3 */
+    --soft-4: #fff0f6; /* page4 final */
+    --accent: #ff6b9a;
+    --muted:#6b6b6b;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Poppins,system-ui,Arial;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fdeff5,#f0fbff);}
+  .wrap{width:980px;max-width:96%;min-height:640px;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(6,10,30,0.25);position:relative}
+  header{padding:18px 26px;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.2));display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ffd1e6);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+  main{padding:28px}
+  .page{display:none;min-height:520px;padding:20px}
+  .page.active{display:block}
+  .center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
+  h1{margin:8px 0 6px;font-size:28px}
+  p.lead{color:var(--muted);margin:6px 0 16px}
+  .btn{background:var(--accent);border:none;padding:12px 18px;border-radius:12px;color:#fff;font-weight:600;cursor:pointer}
+  .ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted)}
+  /* Level1 grid */
+  .grid{display:grid;grid-template-columns:repeat(3,120px);grid-gap:12px}
+  .box{width:120px;height:120px;background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.95));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;box-shadow:0 8px 20px rgba(11,15,30,0.06)}
+  /* popup */
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6);z-index:60}
+  .overlay.show{display:flex}
+  .modal{background:white;padding:18px;border-radius:12px;max-width:420px;width:95%;text-align:center}
+  .small{font-size:14px;color:var(--muted)}
+  /* heart catching */
+  .playfield{position:relative;width:360px;height:320px;border-radius:12px;background:linear-gradient(180deg,#fff,#fffafc);box-shadow:inset 0 0 30px rgba(0,0,0,0.02);overflow:hidden}
+  .heart{position:absolute;font-size:26px;cursor:pointer;user-select:none;transition:transform 220ms ease}
+  .heart:hover{transform:scale(1.12)}
+  /* puzzle */
+  .puzzle-area{display:flex;gap:16px;align-items:flex-start;justify-content:center}
+  .puzzle-canvas{width:420px;height:300px;background:white;border-radius:12px;position:relative;display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:60px;gap:4px;padding:8px}
+  .piece{background:linear-gradient(180deg,#ffdfe6,#fff);display:flex;align-items:center;justify-content:center;font-size:20px;border-radius:6px;cursor:grab;user-select:none}
+  .slot{background:transparent;border:2px dashed rgba(0,0,0,0.05);border-radius:6px}
+  /* final reveal */
+  .heart-reveal{width:220px;height:220px;border-radius:50%;background:linear-gradient(180deg,#fff,#ffdff0);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--accent);box-shadow:0 20px 60px rgba(255,107,154,0.12)}
+  .typing{font-size:18px;line-height:1.5;color:#333;max-width:640px;text-align:center;margin-top:18px}
+  .actions{display:flex;gap:12px;margin-top:18px}
+  /* responsive */
+  @media (max-width:720px){.grid{grid-template-columns:repeat(3,1fr)}.box{width:90px;height:90px}.playfield{width:320px;height:260px}.puzzle-canvas{width:320px;height:260px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">💌</div>
+    <div>
+      <div style="font-size:13px;color:#666">A little surprise</div>
+      <div style="font-weight:700">For someone special</div>
+    </div>
+  </header>
+  <main>
+        <section class="page active" id="page1" style="background:var(--soft-1)">
+      <div class="center">
+        <h1>Hello Miss 🎀🧿...</h1>
+        <p class="lead">Aaj aapko mai apna ek secret batane wala hu 😉...</p>
+        <p class="small">But usse pehle thora game khelo aur enjoy kijiye 😁...</p>
+        <div style="height:16px"></div>
+        <button class="btn" id="startGameBtn">Let's play game 🥳</button>
+      </div>
+    </section>
+
+        <section class="page" id="page2" style="background:var(--soft-2)">
+      <div style="display:flex;gap:24px;align-items:flex-start;justify-content:center;flex-direction:column;align-items:center">
+        <div style="text-align:center;">
+          <h1>Level 1</h1>
+          <div class="small">Choose the Right Box</div>
+          <div style="height:10px"></div>
+          <div id="level1Hint" style="color:var(--muted);margin-bottom:8px">Select the box on the **far right** in the top row ➡️</div>
+        </div>
+        <div class="grid" id="grid1">
+                  </div>
+        <div style="height:10px"></div>
+        <button class="btn ghost" id="l1Next" style="display:none">Next</button>
+      </div>
+    </section>
+
+        <section class="page" id="page3" style="background:var(--soft-3)">
+      <div class="center">
+        <h1>Level 2</h1>
+        <div class="small">Heart Catching Game</div>
+        <div style="height:12px"></div>
+        <div class="playfield" id="playfield"></div>
+        <div style="height:12px"></div>
+        <div id="l2Status" class="small">Click hearts as they appear — catch 8 hearts to pass</div>
+        <div style="height:12px"></div>
+        <div><button class="btn ghost" id="l2Retry" style="display:none">Retry</button><button class="btn" id="l2Next" style="display:none">Next</button></div>
+      </div>
+    </section>
+
+        <section class="page" id="page4" style="background:var(--soft-4)">
+      <div style="text-align:center">
+        <h1>Level 3</h1>
+        <div class="small">Puzzle Game</div>
+        <div style="height:12px"></div>
+        <div class="puzzle-area" style="justify-content:center">
+          <div class="puzzle-canvas" id="puzzleCanvas">
+                      </div>
+        </div>
+        <div style="height:12px"></div>
+        <div id="puzzleStatus" class="small">Drag pieces into correct place. Complete the heart puzzle.</div>
+        <div style="height:12px"></div>
+        <div><button class="btn ghost" id="puzReset">Reset Puzzle</button></div>
+      </div>
+    </section>
+
+      </main>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalContent">
+    <div id="modalTitle" style="font-weight:700;font-size:18px;margin-bottom:8px">Title</div>
+    <div id="modalBody" style="color:#444;margin-bottom:12px">Body</div>
+    <div style="display:flex;gap:10px;justify-content:center"><button class="btn" id="modalOk">OK</button><button class="btn ghost" id="modalCancel">Cancel</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="finalOverlay">
+  <div class="modal" style="max-width:760px">
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div id="curtain" style="width:100%;height:260px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+        <div id="revealHeart" class="heart-reveal" style="transform:scale(0.6);opacity:0">🫶</div>
+      </div>
+      <div id="revealTitle" style="font-weight:700;font-size:20px;margin-top:12px">Secret crush reveal...</div>
+      <div id="typingArea" class="typing" style="min-height:140px"></div>
+      <div class="actions" id="finalActions" style="display:none">
+        <button class="btn ghost" id="rejectBtn">Rejection</button>
+        <button class="btn" id="acceptBtn">Yes I am fully yours 💗🫶🫂</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="resultOverlay">
+  <div class="modal">
+    <div id="resultText" style="color:#333"></div>
+    <div style="height:12px"></div>
+    <div style="text-align:center"><button class="btn" id="resultOk">Close</button></div>
+    <div style="height:6px"></div>
+  </div>
+</div>
+
+<audio id="bgAudio" loop>
+  <source src="audio/bg.mp3" type="audio/mp3"> 
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+// Utilities
+function showOverlay(title, body, okText='OK', cancelText='Cancel', onOk=null, onCancel=null){
+  const ov=document.getElementById('overlay');ov.classList.add('show');
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').textContent=body;
+  const ok=document.getElementById('modalOk'), cancel=document.getElementById('modalCancel');
+  ok.textContent=okText; cancel.textContent=cancelText;
+  ok.onclick=()=>{ov.classList.remove('show'); if(onOk) onOk();}
+  cancel.onclick=()=>{ov.classList.remove('show'); if(onCancel) onCancel();}
+}
+
+// Page nav
+const page1=document.getElementById('page1'), page2=document.getElementById('page2'), page3=document.getElementById('page3'), page4=document.getElementById('page4');
+document.getElementById('startGameBtn').addEventListener('click', ()=>{gotoPage(2); playAudio(); startLevel1();});
+function gotoPage(n){page1.classList.remove('active');page2.classList.remove('active');page3.classList.remove('active');page4.classList.remove('active');
+  if(n===1) page1.classList.add('active'); if(n===2) page2.classList.add('active'); if(n===3) page3.classList.add('active'); if(n===4) page4.classList.add('active');
+}
+
+// Audio play helper (some browsers block autoplay; we try to play once user interacted)
+function playAudio(){const a=document.getElementById('bgAudio');a.volume=0.25; a.play().catch(()=>{/*ignore*/})}
+
+// LEVEL 1: Choose the Right Box
+let correctIndex = 2; // first row last box (0-based left-to-right top-to-bottom -> index 2)
+function startLevel1(){
+  const grid=document.getElementById('grid1'); grid.innerHTML='';
+  for(let i=0;i<9;i++){
+    const b=document.createElement('div'); b.className='box'; b.dataset.idx=i;
+    // CORRECTION: Added content to boxes
+    if(i===correctIndex) b.textContent='🥳'; else b.textContent='❌';
+    b.addEventListener('click', ()=>{
+      if(i===correctIndex){
+        document.getElementById('level1Hint').textContent='Aap ek step aur pass aa gaye ho vo secret jaan ne ke liye 😜';
+        document.getElementById('l1Next').style.display='inline-block';
+        showSimpleModal('Congratulations 🥳','Aapne sahi box choose kiya!');
+        // Optionally disable all boxes after correct selection
+        grid.querySelectorAll('.box').forEach(box => box.style.pointerEvents = 'none');
+      } else {
+        showSimpleModal('Fir se try kro jii 😉','Wrong box — try again');
+      }
+    });
+    grid.appendChild(b);
+  }
+  document.getElementById('l1Next').onclick=()=>{gotoPage(3); startLevel2();}
+}
+function showSimpleModal(title, body){
+  const ov=document.getElementById('overlay');ov.classList.add('show');
+  document.getElementById('modalTitle').textContent=title; document.getElementById('modalBody').textContent=body;
+  document.getElementById('modalOk').textContent='OK'; document.getElementById('modalCancel').style.display='none';
+  document.getElementById('modalOk').onclick=()=>{ov.classList.remove('show'); document.getElementById('modalCancel').style.display='inline-block';};
+}
+
+// LEVEL 2: Heart catching
+let l2Score=0, l2Needed=8, l2Interval=null;
+function startLevel2(){
+  l2Score=0; document.getElementById('l2Status').textContent='Catch '+l2Needed+' hearts. Click hearts as they appear.';
+  const field=document.getElementById('playfield'); field.innerHTML=''; document.getElementById('l2Retry').style.display='none'; document.getElementById('l2Next').style.display='none';
+  l2Interval=setInterval(()=>{
+    if(field.querySelectorAll('.heart').length<6) spawnHeart();
+  },700);
+  // timeout fail case after 35s
+  setTimeout(()=>{ if(l2Score<l2Needed){ endLevel2(false); } },35000);
+}
+function spawnHeart(){
+  const field=document.getElementById('playfield'); const h=document.createElement('div'); h.className='heart'; h.textContent='❤';
+  const size=20+Math.random()*28; h.style.fontSize=size+'px';
+  const x=Math.random()*(field.clientWidth-40); const y=Math.random()*(field.clientHeight-40);
+  h.style.left=x+'px'; h.style.top=y+'px';
+  h.onclick=()=>{ l2Score++; h.remove(); updateL2(); if(l2Score>=l2Needed) endLevel2(true); };
+  field.appendChild(h);
+  // remove after some time
+  setTimeout(()=>{ if(document.body.contains(h)) h.remove(); },5000+Math.random()*4000);
+}
+function updateL2(){ document.getElementById('l2Status').textContent='Hearts caught: '+l2Score+'/'+l2Needed; }
+function endLevel2(success){ clearInterval(l2Interval); if(success){ document.getElementById('l2Status').textContent='Aap dheere dheere pass aate jaa rahe ho secret ke 🤭'; document.getElementById('l2Next').style.display='inline-block'; showSimpleModal('Congratulations 🥳','Level 2 complete!'); document.getElementById('l2Next').onclick=()=>{gotoPage(4); initPuzzle();}; } else { document.getElementById('l2Status').textContent='Time over, try again 😉'; document.getElementById('l2Retry').style.display='inline-block'; document.getElementById('l2Retry').onclick=()=>{startLevel2();}; showSimpleModal('Fir se try kro jii 😉','You couldn\\'t catch enough hearts — try again'); } }
+
+// LEVEL 3: Puzzle (10 pieces) - simple snap-to-slot
+let puzzleState={};
+function initPuzzle(){
+  const canvas=document.getElementById('puzzleCanvas'); canvas.innerHTML=''; puzzleState={};
+  const total=10; // we'll make 10 slots in a 5x2 layout inside the canvas grid
+  // create 10 slots
+  for(let i=0;i<10;i++){
+    const slot=document.createElement('div'); slot.className='slot'; slot.dataset.slot=i; slot.style.minHeight='56px';
+    canvas.appendChild(slot);
+  }
+  // create pieces container (floating pieces appended at bottom)
+  const pieces=[];
+  for(let i=1;i<=10;i++){ pieces.push(i); }
+  // shuffle pieces and create
+  pieces.sort(()=>Math.random()-0.5);
+  pieces.forEach((val,idx)=>{
+    const p=document.createElement('div'); p.className='piece'; p.draggable=true; p.textContent='❤';
+    p.dataset.val=val; p.style.gridColumn='span 1'; p.style.gridRow='span 1';
+    canvas.appendChild(p);
+    p.addEventListener('dragstart',(e)=>{ e.dataTransfer.setData('text/plain', p.dataset.val); setTimeout(()=>p.style.opacity='0.4',0); });
+    p.addEventListener('dragend',(e)=>{ p.style.opacity='1'; });
+  });
+  // allow drop on slots
+  canvas.querySelectorAll('.slot').forEach(slot=>{
+    slot.addEventListener('dragover',(e)=>{ e.preventDefault(); slot.style.borderColor='rgba(255,107,154,0.6)'; });
+    slot.addEventListener('dragleave',(e)=>{ slot.style.borderColor='rgba(0,0,0,0.05)'; });
+    slot.addEventListener('drop',(e)=>{
+      e.preventDefault(); slot.style.borderColor='rgba(0,0,0,0.05)'; const val=e.dataTransfer.getData('text/plain');
+      if(!slot.querySelector('.piece')){
+        const piece=document.querySelector('.piece[data-val="'+val+'"]'); if(piece) slot.appendChild(piece);
+        puzzleState[slot.dataset.slot]=val; checkPuzzleComplete();
+      } else { showSimpleModal('Oops','Yeh slot already bhara hua hai'); }
+    });
+  });
+  document.getElementById('puzReset').onclick=()=>{initPuzzle();};
+}
+function checkPuzzleComplete(){
+  const filled = document.querySelectorAll('.slot .piece').length;
+  document.getElementById('puzzleStatus').textContent = 'Pieces placed: '+filled+'/10. Complete the heart puzzle.';
+  if(filled>=10){ setTimeout(()=>{ showFinalReveal(); },400); }
+}
+
+// FINAL reveal with curtain and typing effect
+function showFinalReveal(){
+  const fo=document.getElementById('finalOverlay'); fo.classList.add('show');
+  const heart=document.getElementById('revealHeart'); heart.style.transition='transform 700ms ease, opacity 700ms ease'; heart.style.transform='scale(1)'; heart.style.opacity='1';
+  const typingArea=document.getElementById('typingArea'); typingArea.innerHTML=''; document.getElementById('revealTitle').textContent='Secret crush reveal...';
+  const lines = [
+    "It’s you in my heart 🫶😉💗",
+    "Main hamesha aapko ek sacchi aur bohot special dost manta aaya hoon,",
+    "par dheere-dheere mera dil aapki taraf aur zyada attract hone laga hai. 🎀🧿",
+    "Humara bond bohot pyara hai — aap loyal, sincere aur bahut hi pyaari ladki hain. 💗",
+    "Main chahta hu ham dono aur close aa jaye… aur hamesha ke liye ek-dusre ke ban jaye 🫣🫶💗",
+    "I love you soo much 🫶💗💗🫂"
+  ];
+  let idx=0;
+  function typeNextLine(){
+    if(idx>=lines.length){ document.getElementById('finalActions').style.display='flex'; return; }
+    const line = lines[idx]; idx++;
+    typeText(line, ()=>{ const br=document.createElement('br'); typingArea.appendChild(br); const br2=document.createElement('br'); typingArea.appendChild(br2); typeNextLine(); });
+  }
+  setTimeout(()=>{ typeNextLine(); },600);
+}
+function typeText(text, cb){
+  const area=document.getElementById('typingArea'); let i=0; const speed=35; const cursorSpan=document.createElement('span'); cursorSpan.textContent='|'; cursorSpan.style.opacity='1'; cursorSpan.style.marginLeft='2px'; area.appendChild(cursorSpan);
+  function step(){ if(i<text.length){ area.insertBefore(document.createTextNode(text.charAt(i)), cursorSpan); i++; setTimeout(step,speed); } else { area.removeChild(cursorSpan); cb(); } } step(); }
+
+// final accept/reject handlers
+document.getElementById('acceptBtn').addEventListener('click', ()=>{ showResult(true); });
+document.getElementById('rejectBtn').addEventListener('click', ()=>{ showResult(false); });
+function showResult(accepted){ document.getElementById('finalOverlay').classList.remove('show'); const ro=document.getElementById('resultOverlay'); ro.classList.add('show'); const txt=document.getElementById('resultText'); if(accepted){ txt.innerHTML = "<b>Thank you…</b><br> Aapne mujhe sach me bohot khush kar diya hai. 🧿🎀<br><br>Main promise karta hoon ki main hamesha loyal rahunga aur aapki expectations ko poora karne ki puri koshish karunga. 🤞💗<br><br> Aapki respect, comfort aur happiness mere liye sabse important rahegi. I\'ll always try to keep you smiling and feeling valued. 🫶💗✨"; } else { txt.innerHTML = "<b>Koi baat nahi.</b><br> Thank you for being honest.<br><br>Main aapki feeling ki izzat karta hoon, aur dosti mere liye hamesha special rahegi. 🧿<br><br>Main hamesha ek accha dost rahunga."; } document.getElementById('resultOk').onclick=()=>{ ro.classList.remove('show'); } }
+
+// initial focus: nothing
+</script>
+</body>
+</html>
